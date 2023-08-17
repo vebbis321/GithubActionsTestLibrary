@@ -22,7 +22,7 @@ jobs:
           if [ -f ".build/release/swiftlint" ]; then
             sudo cp -f .build/release/swiftlint /usr/local/bin/swiftlint
           else
-            git clone --depth 1 --branch $ https://github.com/realm/SwiftLint
+            git clone --depth 1 --branch https://github.com/realm/SwiftLint
             cd SwiftLint
             swift build --disable-sandbox -c release
             mv .build .. && cd ..
@@ -53,7 +53,7 @@ jobs:
               sudo cp -f .build/release/swiftformat /usr/local/bin/swiftformat
             fi
           else
-            git clone --depth 1 --branch $ https://github.com/nicklockwood/SwiftFormat
+            git clone --depth 1 --branch https://github.com/nicklockwood/SwiftFormat
             cd SwiftFormat
             swift build --disable-sandbox -c release
             mv .build .. && cd ..
