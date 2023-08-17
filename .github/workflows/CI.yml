@@ -7,39 +7,22 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    name: Install mint
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        swift: ["5.7"]
+  CodeFormattingCheck:
+    runs-on: macos-latest
     steps:
-      - uses: swift-actions/setup-swift@v1
+      - uses: actions/checkout@v2
+      - name: Cache Mint packages
+        id: mint-cache
+        uses: actions/cache@v2
         with:
-          swift-version: ${{ matrix.swift }}
-      - name: Get swift version
-        run: swift --version
-      - name: Cache Mint
-        id: cache-mint
-        uses: actions/cache@v3
-        with:
-          path: ~/mint
+          path: /usr/local/lib/mint
           key: ${{ runner.os }}-mint-${{ hashFiles('**/Mintfile') }}
           restore-keys: ${{ runner.os }}-mint-
-      - uses: actions/checkout@v2
-      - name: Install linters
-        env:
-          MINT_PATH: "~/mint"
+      - name: Install Mint
         run: |
-          git clone https://github.com/yonaskolb/Mint.git
-          cd Mint
-          swift run mint install yonaskolb/mint
-          mint bootstrap // Installs all the packages in your Mintfile, by default, without linking them globally
-
-      - name: Run linters
-        run: |
-          swiftlint --version
-          swiftlint lint --strict --config .swiftlint.yml --quiet
-          swiftformat --version
-          swiftformat . --config .swiftformat --lint
+          brew upgrade mint || brew install mint || true
+      - name: Install swiftformat via mint
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: mint bootstrap
+      - name: Format Swift code
+        run: mint run swiftformat --verbose .
