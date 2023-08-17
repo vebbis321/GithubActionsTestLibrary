@@ -10,10 +10,10 @@ jobs:
   CodeFormattingCheck:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Mint packages
         id: mint-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /usr/local/lib/mint
           key: ${{ runner.os }}-mint-${{ hashFiles('**/Mintfile') }}
@@ -25,4 +25,10 @@ jobs:
         if: steps.mint-cache.outputs.cache-hit != 'true'
         run: mint bootstrap
       - name: Format Swift code
-        run: mint run swiftformat --verbose .
+        run: |
+          mint swiftformat --version
+          mint swiftformat . --config .swiftformat --lint
+      - name: Lint Swift code
+        run: |
+          mint swiftlint --version
+          mint swiftlint lint --strict --config .swiftlint.yml --quiet
