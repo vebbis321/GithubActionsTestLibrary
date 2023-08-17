@@ -1,34 +1,20 @@
 name: Build and Test
 
 on:
+  pull_request:
+    branches: ["main"]
   push:
-    branches: [main]
-
-env:
-  SCHEME: GithubActionsTestLibrary
-  TEST_DEVICE: platform=iOS Simulator,name=iPhone 14,OS=16.2
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: macos-latest
-    timeout-minutes: 30
 
     steps:
-      - name: Checkout project repo
-        uses: actions/checkout@v3
-
-      - name: Build
-        shell: bash
-        run: xcodebuild -scheme '${{ env.SCHEME }}' -sdk iphonesimulator -destination '${{ env.TEST_DEVICE }}' build
-
-  test:
-    runs-on: macos-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Checkout project repo
-        uses: actions/checkout@v3
-
-      - name: Test
-        shell: bash
-        run: xcodebuild -scheme '${{ env.SCHEME }}' -sdk iphonesimulator -destination '${{ env.TEST_DEVICE }}' testUNNER_OS,RUNNER_ARCH
+      - uses: actions/checkout@v3
+      # Sanity check to make sure we use a valid device in the next step
+      - name: List available devices
+        run: xcrun simctl list devicetypes
+      #generic/platform=iOS is sufficient for just building, - but need to specify concrete destination for tests
+      - name: Build and run tests
+        run: xcodebuild test -scheme GithubActionsTestLibrary -destination 'platform=iOS Simulator,name=iPhone 14' #or any other name from the list of sim devices -sdk iphonesimulator -destination '${{ env.TEST_DEVICE }}' testUNNER_OS,RUNNER_ARCH
