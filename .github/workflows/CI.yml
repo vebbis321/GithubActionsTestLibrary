@@ -32,7 +32,9 @@ jobs:
         env:
           MINT_PATH: "~/mint"
         run: |
-          brew install mint
+          git clone https://github.com/yonaskolb/Mint.git
+          cd Mint
+          swift run mint install yonaskolb/mint
           mint bootstrap // Installs all the packages in your Mintfile, by default, without linking them globally
 
       - name: Run linters
