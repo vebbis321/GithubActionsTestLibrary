@@ -36,7 +36,7 @@ nesting:
   type_level:
     warning: 3
     error: 6
-  statement_level:
+  function_level:
     warning: 5
     error: 10
 
@@ -48,6 +48,7 @@ file_length:
   error: 750
 
 opt_in_rules:
+  - attributes # for @objc on same lone
   - array_init # Prefer using Array(seq) over seq.map { $0 } to convert a sequence into an Array
   - closure_spacing # Closure expressions should have a single space inside each brace
   - collection_alignment # All elements in a collection literal should be vertically aligned
@@ -66,6 +67,7 @@ opt_in_rules:
   - flatmap_over_map_reduce # Prefer flatMap over map followed by reduce([], +)
   - force_unwrapping # Force unwrapping should be avoided
   - force_try # Force tries should be avoided
+  - indentation_width
   - identical_operands # Don't compare the same thing, lol
   - joined_default_parameter # perfer joined() over joined(seperator: "")
   - last_where # Prefer using .last(where:) over .filter { }.last in collections
@@ -82,7 +84,6 @@ opt_in_rules:
   - redundant_type_annotation # Variables should not have redundant type annotation
   - shorthand_optional_binding # Use shorthand syntax for optional binding
   - sorted_first_last # Prefer using min() or max() over sorted().first or sorted().last
-  - sorted_imports # Imports should be sorted
   - toggle_bool # Prefer toggle() instead of boolean = !boolean
   - unused_declaration # Declarations should be referenced at least once within all files linted
   - vertical_parameter_alignment_on_call # Function parameters should be aligned vertically if they’re in multiple lines in a method call
