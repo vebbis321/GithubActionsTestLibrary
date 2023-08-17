@@ -1,11 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+on: pull_request
 jobs:
   CodeFormattingCheck:
     runs-on: macos-latest
@@ -21,14 +16,14 @@ jobs:
       - name: Install Mint
         run: |
           brew upgrade mint || brew install mint || true
-      - name: Install swiftformat via mint
+      - name: Install swiftformat and swiftlint via mint
         if: steps.mint-cache.outputs.cache-hit != 'true'
         run: mint bootstrap
       - name: Format Swift code
         run: |
-          mint swiftformat --version
-          mint swiftformat . --config .swiftformat --lint
+          mint run swiftformat --version
+          mint run swiftformat . --config .swiftformat --lint
       - name: Lint Swift code
         run: |
-          mint swiftlint --version
-          mint swiftlint lint --strict --config .swiftlint.yml --quiet
+          mint run swiftlint --version
+          mint run swiftlint lint --strict --config .swiftlint.yml --quiet
