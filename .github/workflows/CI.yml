@@ -7,60 +7,32 @@ on:
     branches: [main]
 
 jobs:
-  SwiftLint:
-    runs-on: ubuntu-lates
+  build:
+    name: Install mint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        swift: ["5.7"]
     steps:
-      - uses: actions/checkout@v2
-      - name: Read version from Mintfile
-        run: echo "SWIFTLINT_VERSION=$(awk '/SwiftLint/ {split($0, a, "@"); print a[2]}' Mintfile)" >> $GITHUB_ENV
-      - uses: actions/cache@v2
+      - uses: swift-actions/setup-swift@v1
         with:
-          path: .build/release/swiftlint
-          key: $-linting-swiftlint-$
-      - name: Build realm/SwiftLint
-        run: |
-          if [ -f ".build/release/swiftlint" ]; then
-            sudo cp -f .build/release/swiftlint /usr/local/bin/swiftlint
-          else
-            git clone --depth 1 --branch https://github.com/realm/SwiftLint
-            cd SwiftLint
-            swift build --disable-sandbox -c release
-            mv .build .. && cd ..
-            rm -rf SwiftLint
-            sudo cp -f .build/release/swiftlint /usr/local/bin/swiftlint
-          fi
-      - name: SwiftLint
-        run: |
-          swiftlint --version
-          swiftlint lint --strict --config .swiftlint.yml --quiet
+          swift-version: ${{ matrix.swift }}
+      - name: Get swift version
+        run: swift --version
+      - name: Cache Mint
+        if: ${{ matrix.os == 'macos-latest' }}
+        id: cache-mint
+        uses: actions/cache@v3
+        with:
+          path: ~/mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('**/Mintfile') }}
+          restore-keys: ${{ runner.os }}-mint-
+      - uses: actions/checkout@v2
+      - name: Install Dependencies (Mac only)
+        if: ${{ matrix.os == 'macos-latest' && steps.cache-npm.outputs.cache-hit != 'true' }}
         env:
-          LINUX_SOURCEKIT_LIB_PATH: /usr/share/swift/usr/lib # FIXED: Fatal error: Loading libsourcekitdInProc.so failed
-
-  SwiftFormat:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Read version from Mintfile
-        run: echo "SWIFTFORMAT_VERSION=$(awk '/SwiftFormat/ {split($0, a, "@"); print a[2]}' Mintfile)" >> $GITHUB_ENV
-      - uses: actions/cache@v2
-        with:
-          path: .build/release/swiftformat
-          key: $-linting-swiftformat-$
-      - name: Build nicklockwood/SwiftFormat
+          MINT_PATH: "~/mint"
         run: |
-          if [ -f ".build/release/swiftformat" ]; then
-            if ! [ -x "$(command -v swift-format)" ]; then
-              sudo cp -f .build/release/swiftformat /usr/local/bin/swiftformat
-            fi
-          else
-            git clone --depth 1 --branch https://github.com/nicklockwood/SwiftFormat
-            cd SwiftFormat
-            swift build --disable-sandbox -c release
-            mv .build .. && cd ..
-            rm -rf SwiftFormat
-            sudo cp -f .build/release/swiftformat /usr/local/bin/swiftformat
-          fi
-      - name: SwiftFormat
-        run: |
-          swiftformat --version
-          swiftformat . --config .swiftformat --lint
+          brew install mint
+          mint bootstrap
