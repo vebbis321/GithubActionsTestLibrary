@@ -1,6 +1,7 @@
-public struct GithubActionsTestLibrary {
-    public private(set) var text = "Hello, World!"
+import UIKit
 
-    public init() {
+public extension Int {
+    func isOddNumber() -> Bool {
+        self % 2 != 0
     }
 }
