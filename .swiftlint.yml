@@ -2,9 +2,10 @@ excluded:
   - ${PWD}/Carthage
   - ${PWD}/Pods
   - ${PWD}/DerivedData
+  - ${PWD}/Package.swift
 
 included:
-  - ${PWD}
+  - ${PWD}/Sources
 
 force_cast: warning
 
@@ -46,6 +47,9 @@ cyclomatic_complexity:
 file_length:
   warning: 500
   error: 750
+
+analyzer_rules:
+  - unused_declaration
 
 opt_in_rules:
   - attributes # for @objc on same lone
@@ -90,7 +94,7 @@ opt_in_rules:
   - yoda_condition # The constant literal should be placed on the right-hand side of the comparison operator
 
 indentation_width:
-  indentation_width: 2
+  indentation_width: 4
 
 disabled_rules:
   - trailing_comma

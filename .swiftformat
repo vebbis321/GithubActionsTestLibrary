@@ -3,7 +3,7 @@
 
 # options
 --swiftversion 5.7
---indent 2 #indent
+--indent 4 #indent
 --indentstrings true #indent
 --someAny disabled # opaqueGenericParameters
 --wraparguments before-first # wrapArguments
